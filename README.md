@@ -1,7 +1,7 @@
 # d3-tutorial
 Tutorial for getting started with D3.js for data visualization by implementing a dashboard using the Yelp public dataset.
 
-![alt-text](https://gecgithub01.walmart.com/a0s0560/d3-tutorial/blob/master/media/demo.gif)
+![alt-text](https://github.com/aravind-sundaresan/d3-tutorial/blob/master/media/demo.gif)
 
 ### Project Organization
 ```nohighlight
