@@ -15,7 +15,13 @@ Tutorial for getting started with D3.js for data visualization by implementing a
 
 ### Setup
 
+From GitHub:
+```
+git clone https://github.com/aravind-sundaresan/d3-tutorial.git
+cd d3-tutorial
+```
 
+The instructions to run the application from the project folder are listed below.
 
 ### Instructions to launch the application
 
