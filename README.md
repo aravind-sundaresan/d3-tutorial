@@ -1,5 +1,5 @@
 # d3-tutorial
-Tutorial for getting started with D3.js for data visualization by implementing a dashboard using the Yelp public dataset.
+Tutorial for getting started with D3.js for data visualization by implementing a dashboard using the Yelp public dataset. I have also written a blog post on Medium as part of the tutorial. The blog post gives an introduction to D3.js as well as details regarding how to use it to generate this dashboard. Here's the link to the post: https://medium.com/@whackadoodle/getting-started-with-d3-js-for-data-visualization-5870efbd133b
 
 ![alt-text](https://github.com/aravind-sundaresan/d3-tutorial/blob/master/media/demo.gif)
 
@@ -25,7 +25,7 @@ The instructions to run the application from the project folder are listed below
 
 ### Instructions to launch the application
 
-- Open the command prompt (Windows)/ terminal (macOS/ Linux)
+- Open the command prompt (Windows) / terminal (macOS/Linux)
 
 - Inorder to launch the application, the user must run a simple local HTTP server from the project folder. We can use Python 
 to run the server. 
