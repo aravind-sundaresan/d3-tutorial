@@ -6,7 +6,7 @@ function init() {
 }
 
 function fetchData() {
-    d3.csv("./data/restaurants.csv", function(error, data) {
+    d3.csv("./data/restaurants.csv", function(error, data) { // Users can change the input filename to fetch their own data
         if (error) throw error;
         data.forEach(function(d) {
             d.Value = +d.Value;
@@ -25,18 +25,18 @@ function createMap(data) {
     var restaurants = data;
     var map = L.map("map");
     L.tileLayer("http://{s}.tile.osm.org/{z}/{x}/{y}.png").addTo(map);
-    map.setView([33.4225106, -111.936653], 15);
+    map.setView([33.4225106, -111.936653], 16); // User input
     var myRenderer = L.canvas({
         padding: 0.5
     });
 
     var geojsonMarkerOptions = {
-        radius: 5,
-        fillColor: "#FF8033",
-        color: "#FAC3A2",
-        weight: 2,
-        opacity: 1,
-        fillOpacity: 1
+        radius: 5, // User input
+        fillColor: "#FF8033", // User input
+        color: "#FAC3A2", // User input
+        weight: 2, // User input
+        opacity: 1, // User input
+        fillOpacity: 1 // User input
     };
 
     var bounds = L.latLng(33.4225106, -111.936653).toBounds(300);
@@ -93,7 +93,7 @@ function createMap(data) {
 
 function createCharts(){
 
-    d3.csv("./data/ratings_and_reviews_yearwise.csv", function(data1) {
+    d3.csv("./data/ratings_and_reviews_yearwise.csv", function(data1) { // User input filename
 
         var dat = [];
         data1.forEach(function(d) {
@@ -144,7 +144,7 @@ function createCharts(){
                     "translate(" + (width/2) + " ," +
                                    (height + margin.top - 15) + ")")
               .style("text-anchor", "middle")
-              .text("Year of Review");
+              .text("Year of Review"); // User input
 
         // Creating the y-axis
         svg.append("g")
@@ -166,7 +166,7 @@ function createCharts(){
             .attr("text-anchor", "middle")
             .style("font-size", "18px")
             .style("text-decoration", "underline")
-            .text("Annual Average Rating of the Restaurant");
+            .text("Annual Average Rating of the Restaurant"); // User input
 
 
         // Appending a path to draw the line, bind the data, and call the line generator
@@ -177,7 +177,7 @@ function createCharts(){
 
         var div = d3.select("body").append("div")
             .attr("class", "tooltip")
-            .style("opacity", 0);
+            .style("opacity", 0); // User input
 
         // Adding a circle for each datapoint
         svg.selectAll(".dot")
@@ -187,7 +187,7 @@ function createCharts(){
             .attr("class", "dot") 
             .attr("cx", function(d) { return xScale(d.year) })
             .attr("cy", function(d) { return yScale(d.rating) })
-            .attr("r", 5)
+            .attr("r", 5) 
             .on("mouseover", function(d) {
 
               var matrix = this.getScreenCTM().translate(+ this.getAttribute("cx"), + this.getAttribute("cy"));
@@ -195,8 +195,8 @@ function createCharts(){
               div.style("width","110px");
               div.style("height","20px");
               div.transition()
-                        .duration(200)
-                        .style("opacity", 1);
+                        .duration(200) // User input
+                        .style("opacity", 1); // User input
               div.html("Average Rating: " + Math.round(d.rating * 100) / 100)
                         .style("left", (window.pageXOffset + matrix.e - 55) + "px")
                         .style("top", (window.pageYOffset + matrix.f - 45) + "px");
@@ -204,9 +204,9 @@ function createCharts(){
 
             }).on("mouseout", function(d) {
               div.transition()
-                        .duration(500)
-                        .style("opacity", 0);
-              d3.select(this).attr("r", 5)
+                        .duration(500) // User input
+                        .style("opacity", 0); // User input
+              d3.select(this).attr("r", 5) // User input
             });
 
         var x = d3.scaleBand()
@@ -214,6 +214,7 @@ function createCharts(){
                   .padding(0.1);
         var y = d3.scaleLinear()
                   .range([height, 0]);
+
 
 // Constructing the bar chart
 
@@ -245,7 +246,7 @@ function createCharts(){
   // append the rectangles for the bar chart
   svg.selectAll(".bar")
     .data(dat)
-  .enter().append("rect")
+    .enter().append("rect")
     .attr("class", "bar")
     .attr("x", function(d) { return x(d.year); })
     .attr("width", x.bandwidth())
@@ -257,16 +258,16 @@ function createCharts(){
           div.style("height", "20px")
           div.style("width", "60px")
           div.transition()
-              .duration(200)
-              .style("opacity", 1);
+              .duration(200) // User input
+              .style("opacity", 1); // User input
           div.html("Count:" + d.reviews)
               .style("left", (window.pageXOffset + matrix.e) + "px")
               .style("top", (window.pageYOffset + matrix.f - 30) + "px");
           })
-  .on("mouseout", function(d) {
+    .on("mouseout", function(d) {
           div.transition()
-              .duration(500)
-              .style("opacity", 0);
+              .duration(500) // User input
+              .style("opacity", 0); // User input
       });
 
   // Adding the y-axis
@@ -277,7 +278,7 @@ function createCharts(){
     .attr("x",0 - (height / 2))
     .attr("dy", "1em")
     .style("text-anchor", "middle")
-    .text("Number of Reviews");
+    .text("Number of Reviews"); // User input
   svg.append("g")
     .call(d3.axisLeft(y));
 
@@ -287,10 +288,10 @@ function createCharts(){
           "translate(" + (width/2) + " ," +
                          (height + margin.top - 15) + ")")
     .style("text-anchor", "middle")
-    .text("Year of Review");
+    .text("Year of Review"); // User input
   svg.append("g")
     .attr("transform", "translate(0," + height + ")")
-    .call(d3.axisBottom(x).tickFormat(d3.timeFormat("%Y")));
+    .call(d3.axisBottom(x).tickFormat(d3.timeFormat("%Y"))); 
 
   // Adding the chart title
   svg.append("text")
@@ -299,14 +300,14 @@ function createCharts(){
       .attr("text-anchor", "middle")
       .style("font-size", "18px")
       .style("text-decoration", "underline")
-      .text("Annual Number of Reviews");
+      .text("Annual Number of Reviews"); // User input
 
 });
 
 
 // Constructing the vertical bar chart
 
-  d3.csv("./data/final.csv", function(data) {
+  d3.csv("./data/final.csv", function(data) { // User input filename
     data.forEach(function(d) {
       var player = d.business_id;
       if (test == player) {
@@ -358,7 +359,7 @@ function drawPieChart(business_id) {
     d3.select("#pie-chart").remove();
 
     // Loading data from CSV file
-    var pieData = d3.csv("./data/review_count_per_sentiment.csv", function(error, pieData) {
+    var pieData = d3.csv("./data/review_count_per_sentiment.csv", function(error, pieData) { // User input filename
 
     var positive = 0;
     var negative = 0;
@@ -384,7 +385,7 @@ function drawPieChart(business_id) {
 
     // Defining the colors of the pie sectors
     var color = d3.scaleOrdinal()
-      .range(["#34cbcb", "#FF8080", "#C2C9D1"]);
+      .range(["#34cbcb", "#FF8080", "#C2C9D1"]); // User input
 
     // Defining the arcs
     var arc = d3.arc()
@@ -402,7 +403,7 @@ function drawPieChart(business_id) {
 
 
     // Defining the SVG element that would contain the pie chart
-    var svg = d3.select("#sentiment").append("svg")
+    var svg = d3.select("#sentiment").append("svg") 
               .attr("id","pie-chart")
               .attr("height", 600)
               .style("display", "inline")
@@ -414,54 +415,54 @@ function drawPieChart(business_id) {
     // Adding legend to the pie chart
     d3.select("#pie-chart")
         .append("circle")
-        .attr("cx", 100)
-        .attr("cy", 130)
-        .attr("r", 6)
-        .style("fill", "#34cbcb")
+        .attr("cx", 100) // User input
+        .attr("cy", 130) // User input
+        .attr("r", 6) // User input
+        .style("fill", "#34cbcb") // User input
     d3.select("#pie-chart")
         .append("text")
-        .attr("x", 110)
-        .attr("y", 130)
-        .text("Positive")
-        .style("font-size", "15px")
+        .attr("x", 110) // User input
+        .attr("y", 130) // User input
+        .text("Positive") // User input
+        .style("font-size", "15px") // User input
         .attr("alignment-baseline","middle")
 
     d3.select("#pie-chart")
         .append("circle")
-        .attr("cx",100)
-        .attr("cy",160)
-        .attr("r", 6)
-        .style("fill", "#C2C9D1")
+        .attr("cx",100) // User input
+        .attr("cy",160) // User input
+        .attr("r", 6) // User input
+        .style("fill", "#C2C9D1") // User input
     d3.select("#pie-chart")
         .append("text")
-        .attr("x", 110)
-        .attr("y", 160)
-        .text("Neutral")
-        .style("font-size", "15px")
+        .attr("x", 110) // User input
+        .attr("y", 160) // User input
+        .text("Neutral") // User input
+        .style("font-size", "15px") // User input
         .attr("alignment-baseline","middle")
 
     d3.select("#pie-chart")
         .append("circle")
-        .attr("cx",100)
-        .attr("cy",190)
-        .attr("r", 6)
-        .style("fill", "#FF8080")
+        .attr("cx",100) // User input
+        .attr("cy",190) // User input
+        .attr("r", 6) // User input
+        .style("fill", "#FF8080") // User input
     d3.select("#pie-chart")
         .append("text")
-        .attr("x", 110)
-        .attr("y", 190)
-        .text("Negative")
-        .style("font-size", "15px")
+        .attr("x", 110) // User input
+        .attr("y", 190) // User input
+        .text("Negative") // User input
+        .style("font-size", "15px") // User input
         .attr("alignment-baseline","middle")
 
     // Adding chart title
     svg.append("text")
-        .attr("x", 0)             
-        .attr("y", -260)
+        .attr("x", 0) // User input            
+        .attr("y", -260) // User input
         .attr("text-anchor", "middle")  
-        .style("font-size", "18") 
+        .style("font-size", "18") // User input
         .style("text-decoration", "underline")  
-        .text("Sentiment Split across Customer Reviews");
+        .text("Sentiment Split across Customer Reviews"); // User input
 
     // Generating the groups/sectors and binding data to the same
     var g = svg.selectAll(".arc")
@@ -491,7 +492,7 @@ var flag = true;
 
 // Function to load data for the word bubble chart
 function loadCSV(){
-    d3.csv('./data/word_bubble_data.csv', function(error, data) {
+    d3.csv('./data/word_bubble_data.csv', function(error, data) { // User input filename
         if (error) throw error;
         data.forEach(function(d){
              var dd = {"business_id": d.business_id, "stars": Number(d.stars), "keys": (d.keys), "dict":(d.dict)}
@@ -530,7 +531,7 @@ function createWordBubble(business_id){
             .attr("text-anchor", "middle")  
             .style("font-size", "20") 
             .style("text-decoration", "underline")  
-            .text("Frequently used words in customer reviews");
+            .text("Frequently used words in customer reviews"); // User input
 
     // Defining a pack to lay out the hierarchy of nodes
     var pack = d3.pack()
@@ -572,7 +573,7 @@ function createWordBubble(business_id){
             // Drawing a circle for each node
             node.append("circle")
                .attr("id", function(d) { return d.data; })
-               .attr("r", function(d) { return d.r; })
+               .attr("r", function(d) { return d.r; }) 
                .style("fill", function(d) { return color(d.data); });
 
             node.append("clipPath")
