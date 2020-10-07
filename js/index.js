@@ -6,7 +6,7 @@ function init() {
 }
 
 function fetchData() {
-    d3.csv("./data/restaurants.csv", function(error, data) { // Users can change the input filename to fetch their own data
+    d3.csv("./data/restaurants.csv", function(error, data) {
         if (error) throw error;
         data.forEach(function(d) {
             d.Value = +d.Value;
@@ -25,24 +25,25 @@ function createMap(data) {
     var restaurants = data;
     var map = L.map("map");
     L.tileLayer("http://{s}.tile.osm.org/{z}/{x}/{y}.png").addTo(map);
-    map.setView([33.4225106, -111.936653], 16); // User input
+    map.setView([33.4225106, -111.936653], 15.5);
     var myRenderer = L.canvas({
         padding: 0.5
     });
 
     var geojsonMarkerOptions = {
-        radius: 5, // User input
-        fillColor: "#FF8033", // User input
-        color: "#FAC3A2", // User input
-        weight: 2, // User input
-        opacity: 1, // User input
-        fillOpacity: 1 // User input
+        radius: 5,
+        fillColor: "#FF8033",
+        color: "#FAC3A2",
+        weight: 2,
+        opacity: 1,
+        fillOpacity: 1
     };
 
     var bounds = L.latLng(33.4225106, -111.936653).toBounds(300);
     var inRangeRestaurants = [],
     latlng_a = new L.LatLng(33.4225106, -111.936653),
     latlng_b;
+
     data.forEach(function(location) {
         latlng_b = new L.LatLng(location["latitude"], location["longitude"]);
         if (latlng_a.distanceTo(latlng_b) == 0) {
@@ -93,16 +94,17 @@ function createMap(data) {
 
 function createCharts(){
 
-    d3.csv("./data/ratings_and_reviews_yearwise.csv", function(data1) { // User input filename
+    d3.csv("./data/ratings_and_reviews_yearwise.csv", function(data1) {
 
-        var dat = [];
+        var chart_data = [];
+
         data1.forEach(function(d) {
             var input_business = d.business_id;
 
             if (test == input_business) {
               var parseDate = d3.timeParse("%Y");
-              var dd = {"year":parseDate(d.year.toString()), "rating": Number(d.stars), "reviews": Number(d.review_count)}
-              dat.push(dd);
+              var record = {"year":parseDate(d.year.toString()), "rating": Number(d.stars), "reviews": Number(d.review_count)}
+              chart_data.push(record);
             }
         });
 
@@ -113,18 +115,18 @@ function createCharts(){
 
         // Scaling the x-axis
         var xScale = d3.scaleTime()
-            .rangeRound([0, width]); 
-        xScale.domain(d3.extent(dat, function(d){ return d.year;}))
+                       .rangeRound([0, width]); 
+        xScale.domain(d3.extent(chart_data, function(d){ return d.year;}))
 
         // Scaling the y-axis
         var yScale = d3.scaleLinear()
-            .domain([0, 5]) // input
-            .range([height, 0]); // output
+                        .domain([0, 5]) // input
+                        .range([height, 0]); // output
 
         // d3 line generator
         var line = d3.line()
-            .x(function(d) { return xScale(d.year); }) // x values for the line generator
-            .y(function(d) { return yScale(d.rating); }) // y values for the line generator
+                      .x(function(d) { return xScale(d.year); }) // x values for the line generator
+                      .y(function(d) { return yScale(d.rating); }) // y values for the line generator
 
         // Selecting the HTML div and adding a new SVG element for the line chart
         var svg = d3.select("#charts").append("svg").attr("class", "ratings").style("display", "inline")
@@ -144,7 +146,7 @@ function createCharts(){
                     "translate(" + (width/2) + " ," +
                                    (height + margin.top - 15) + ")")
               .style("text-anchor", "middle")
-              .text("Year of Review"); // User input
+              .text("Year of Review");
 
         // Creating the y-axis
         svg.append("g")
@@ -166,28 +168,28 @@ function createCharts(){
             .attr("text-anchor", "middle")
             .style("font-size", "18px")
             .style("text-decoration", "underline")
-            .text("Annual Average Rating of the Restaurant"); // User input
+            .text("Annual Average Rating of the Restaurant");
 
 
         // Appending a path to draw the line, bind the data, and call the line generator
         svg.append("path")
-            .datum(dat) // Bind data to the line
+            .datum(chart_data) // Bind data to the line
             .attr("class", "line") 
             .attr("d", line); 
 
         var div = d3.select("body").append("div")
             .attr("class", "tooltip")
-            .style("opacity", 0); // User input
+            .style("opacity", 0);
 
         // Adding a circle for each datapoint
         svg.selectAll(".dot")
-            .data(dat)
+            .data(chart_data)
             .enter()
             .append("circle") 
             .attr("class", "dot") 
             .attr("cx", function(d) { return xScale(d.year) })
             .attr("cy", function(d) { return yScale(d.rating) })
-            .attr("r", 5) 
+            .attr("r", 5)
             .on("mouseover", function(d) {
 
               var matrix = this.getScreenCTM().translate(+ this.getAttribute("cx"), + this.getAttribute("cy"));
@@ -195,8 +197,8 @@ function createCharts(){
               div.style("width","110px");
               div.style("height","20px");
               div.transition()
-                        .duration(200) // User input
-                        .style("opacity", 1); // User input
+                        .duration(200)
+                        .style("opacity", 1);
               div.html("Average Rating: " + Math.round(d.rating * 100) / 100)
                         .style("left", (window.pageXOffset + matrix.e - 55) + "px")
                         .style("top", (window.pageYOffset + matrix.f - 45) + "px");
@@ -204,118 +206,135 @@ function createCharts(){
 
             }).on("mouseout", function(d) {
               div.transition()
-                        .duration(500) // User input
-                        .style("opacity", 0); // User input
-              d3.select(this).attr("r", 5) // User input
+                        .duration(500)
+                        .style("opacity", 0);
+              d3.select(this).attr("r", 5)
             });
-
-        var x = d3.scaleBand()
-                  .range([0, width])
-                  .padding(0.1);
-        var y = d3.scaleLinear()
-                  .range([height, 0]);
 
 
 // Constructing the bar chart
 
-  // Selection 
+      // Selection 
 
-  // append the svg object to the body of the page
-  // append a 'group' element to 'svg'
-  // moves the 'group' element to the top left margin
-  var svg = d3.select("#charts").append("svg").attr("class", "reviews").style("display", "inline")
-      .attr("width", 500)
-      .attr("height", 350)
-    .append("g")
-      .attr("transform",
-            "translate(" + margin.left + "," + margin.top + ")");
-  var parseDate = d3.timeParse("%Y");
-  // get the data
-    // format the data
-    // Scale the range of the data in the domains
-    x.domain(dat.map(function(d) { return d.year; }));
-    y.domain([0, d3.max(dat, function(d) { return d.reviews; })]);
+      // append the svg object to the body of the page
+      // append a 'group' element to 'svg'
+      // moves the 'group' element to the top left margin
+      var svg = d3.select("#charts")
+                  .append("svg")
+                  .attr("class", "reviews")
+                  .style("display", "inline")
+                  .attr("width", 500)
+                  .attr("height", 350)
+                  .append("g")
+                  .attr("transform",
+                        "translate(" + margin.left + "," + margin.top + ")");
+
+      var parseDate = d3.timeParse("%Y");
+
+      // Defining the x and y axes
+      var x = d3.scaleBand()
+                .range([0, width])
+                .padding(0.1);
+                
+      var y = d3.scaleLinear()
+                .range([height, 0]);
+
+      // get the data
+      // format the data
+      // Scale the range of the data in the domains
+      x.domain(chart_data.map(function(d) { return d.year; }));
+      y.domain([0, d3.max(chart_data, function(d) { return d.reviews; })]);
 
 
-        var div = d3.select("body").append("div")
-        .attr("class", "tooltip")
-        .style("opacity", 0);
+      var div = d3.select("body")
+                  .append("div")
+                  .attr("class", "tooltip")
+                  .style("opacity", 0);
 
-  // Data Visualization
+      // Data Visualization
 
-  // append the rectangles for the bar chart
-  svg.selectAll(".bar")
-    .data(dat)
-    .enter().append("rect")
-    .attr("class", "bar")
-    .attr("x", function(d) { return x(d.year); })
-    .attr("width", x.bandwidth())
-    .attr("y", function(d) { return y(d.reviews); })
-    .attr("height", function(d) { return height - y(d.reviews); })
-    .on ("mouseover", function(d) {
-          var matrix = this.getScreenCTM()
-              .translate(+ this.getAttribute("x"), + this.getAttribute("y"));
-          div.style("height", "20px")
-          div.style("width", "60px")
-          div.transition()
-              .duration(200) // User input
-              .style("opacity", 1); // User input
-          div.html("Count:" + d.reviews)
-              .style("left", (window.pageXOffset + matrix.e) + "px")
-              .style("top", (window.pageYOffset + matrix.f - 30) + "px");
-          })
-    .on("mouseout", function(d) {
-          div.transition()
-              .duration(500) // User input
-              .style("opacity", 0); // User input
-      });
+      // append the rectangles for the bar chart
+      svg.selectAll(".bar")
+        .data(chart_data)
+        .enter().append("rect")
+        .attr("class", "bar")
+        .attr("x", function(d) { return x(d.year); })
+        .attr("width", x.bandwidth())
+        .attr("y", function(d) { return y(d.reviews); })
+        .attr("height", function(d) { return height - y(d.reviews); })
 
-  // Adding the y-axis
+        .on("mouseover", function(d) {
+              var matrix = this.getScreenCTM()
+                  .translate(+ this.getAttribute("x"), + this.getAttribute("y"));
+              div.style("height", "20px")
+              div.style("width", "60px")
+              div.transition()
+                  .duration(200)
+                  .style("opacity", 1);
+              div.html("Count:" + d.reviews)
+                  .style("left", (window.pageXOffset + matrix.e) + "px")
+                  .style("top", (window.pageYOffset + matrix.f - 30) + "px");
+              })
+        .on("mouseout", function(d) {
+              div.transition()
+                  .duration(500)
+                  .style("opacity", 0);
+          });
 
-  svg.append("text")
-    .attr("transform", "rotate(-90)")
-    .attr("y", 20 - margin.left)
-    .attr("x",0 - (height / 2))
-    .attr("dy", "1em")
-    .style("text-anchor", "middle")
-    .text("Number of Reviews"); // User input
-  svg.append("g")
-    .call(d3.axisLeft(y));
+      // Adding the y-axis
 
-  // Adding the x-axis
-  svg.append("text")
-    .attr("transform",
-          "translate(" + (width/2) + " ," +
-                         (height + margin.top - 15) + ")")
-    .style("text-anchor", "middle")
-    .text("Year of Review"); // User input
-  svg.append("g")
-    .attr("transform", "translate(0," + height + ")")
-    .call(d3.axisBottom(x).tickFormat(d3.timeFormat("%Y"))); 
+      svg.append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 20 - margin.left)
+        .attr("x",0 - (height / 2))
+        .attr("dy", "1em")
+        .style("text-anchor", "middle")
+        .text("Number of Reviews");
+      svg.append("g")
+        .call(d3.axisLeft(y));
 
-  // Adding the chart title
-  svg.append("text")
-      .attr("x", (width / 2))
-      .attr("y", 5 - (margin.top / 2))
-      .attr("text-anchor", "middle")
-      .style("font-size", "18px")
-      .style("text-decoration", "underline")
-      .text("Annual Number of Reviews"); // User input
+      // Adding the x-axis
 
-});
+      svg.append("text")
+        .attr("transform",
+              "translate(" + (width/2) + " ," +
+                             (height + margin.top - 15) + ")")
+        .style("text-anchor", "middle")
+        .text("Year of Review");
+      svg.append("g")
+        .attr("transform", "translate(0," + height + ")")
+        .call(d3.axisBottom(x).tickFormat(d3.timeFormat("%Y")));
+
+      // Adding the chart title
+      svg.append("text")
+          .attr("x", (width / 2))
+          .attr("y", 5 - (margin.top / 2))
+          .attr("text-anchor", "middle")
+          .style("font-size", "18px")
+          .style("text-decoration", "underline")
+          .text("Annual Number of Reviews");
+
+    });
 
 
 // Constructing the vertical bar chart
 
-  d3.csv("./data/final.csv", function(data) { // User input filename
-    data.forEach(function(d) {
-      var player = d.business_id;
-      if (test == player) {
-        var dat = [{"weekday":"Monday", "checkins":Number(d.Monday)}, {"weekday":"Tuesday", "checkins":Number(d.Tuesday)},{"weekday":"Wednesday", "checkins":Number(d.Wednesday)},{"weekday":"Thursday", "checkins":Number(d.Thursday)},{"weekday":"Friday", "checkins": Number(d.Friday)}, {"weekday":"Saturday", "checkins":Number(d.Saturday)},{"weekday":"Sunday", "checkins":Number(d.Sunday)}]
-        var margin = {top: 60, right: 30, bottom: 50, left: 70},
-        width = 390//960 - margin.left - margin.right,
-        height = 200//500 - margin.top - margin.bottom;
-          var svg = d3.select("#charts").append("svg").attr("class", "checkins").style("display", "inline").attr("width", 500).attr("height", 350).append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+    d3.csv("./data/final.csv", function(data) {
+      data.forEach(function(d) {
+        var player = d.business_id;
+        if (test == player) {
+          var dat = [{"weekday":"Monday", "checkins":Number(d.Monday)}, {"weekday":"Tuesday", "checkins":Number(d.Tuesday)},{"weekday":"Wednesday", "checkins":Number(d.Wednesday)},{"weekday":"Thursday", "checkins":Number(d.Thursday)},{"weekday":"Friday", "checkins": Number(d.Friday)}, {"weekday":"Saturday", "checkins":Number(d.Saturday)},{"weekday":"Sunday", "checkins":Number(d.Sunday)}]
+          var margin = {top: 60, right: 30, bottom: 50, left: 70},
+          width = 390//960 - margin.left - margin.right,
+          height = 200//500 - margin.top - margin.bottom;
+          var svg = d3.select("#charts")
+                      .append("svg")
+                      .attr("class", "checkins")
+                      .style("display", "inline")
+                      .attr("width", 500)
+                      .attr("height", 350)
+                      .append("g")
+                      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
           var x = d3.scaleLinear().range([0, width]).domain([0, d3.max(dat, function(d) {
               return d.checkins;
           })]);
@@ -339,18 +358,19 @@ function createCharts(){
           }).text(function(d) {
               return d.checkins;
           });
-                         svg.append("text")
-        .attr("x", (width / 2))
-        .attr("y", 5 - (margin.top / 2))
-        .attr("text-anchor", "middle")
-        .style("font-size", "18px")
-        .style("text-decoration", "underline")
-        .text("Weekly Check-In Distribution");
+          
+          svg.append("text")
+              .attr("x", (width / 2))
+              .attr("y", 5 - (margin.top / 2))
+              .attr("text-anchor", "middle")
+              .style("font-size", "18px")
+              .style("text-decoration", "underline")
+              .text("Weekly Check-In Distribution");
 
-      }
+        }
 
-  });
-  });
+      });
+    });
 }
 
 function drawPieChart(business_id) {
@@ -359,7 +379,7 @@ function drawPieChart(business_id) {
     d3.select("#pie-chart").remove();
 
     // Loading data from CSV file
-    var pieData = d3.csv("./data/review_count_per_sentiment.csv", function(error, pieData) { // User input filename
+    var pieData = d3.csv("./data/review_count_per_sentiment.csv", function(error, pieData) {
 
     var positive = 0;
     var negative = 0;
@@ -385,7 +405,7 @@ function drawPieChart(business_id) {
 
     // Defining the colors of the pie sectors
     var color = d3.scaleOrdinal()
-      .range(["#34cbcb", "#FF8080", "#C2C9D1"]); // User input
+      .range(["#34cbcb", "#FF8080", "#C2C9D1"]);
 
     // Defining the arcs
     var arc = d3.arc()
@@ -403,7 +423,7 @@ function drawPieChart(business_id) {
 
 
     // Defining the SVG element that would contain the pie chart
-    var svg = d3.select("#sentiment").append("svg") 
+    var svg = d3.select("#sentiment").append("svg")
               .attr("id","pie-chart")
               .attr("height", 600)
               .style("display", "inline")
@@ -415,54 +435,54 @@ function drawPieChart(business_id) {
     // Adding legend to the pie chart
     d3.select("#pie-chart")
         .append("circle")
-        .attr("cx", 100) // User input
-        .attr("cy", 130) // User input
-        .attr("r", 6) // User input
-        .style("fill", "#34cbcb") // User input
+        .attr("cx", 100)
+        .attr("cy", 130)
+        .attr("r", 6)
+        .style("fill", "#34cbcb")
     d3.select("#pie-chart")
         .append("text")
-        .attr("x", 110) // User input
-        .attr("y", 130) // User input
-        .text("Positive") // User input
-        .style("font-size", "15px") // User input
+        .attr("x", 110)
+        .attr("y", 130)
+        .text("Positive")
+        .style("font-size", "15px")
         .attr("alignment-baseline","middle")
 
     d3.select("#pie-chart")
         .append("circle")
-        .attr("cx",100) // User input
-        .attr("cy",160) // User input
-        .attr("r", 6) // User input
-        .style("fill", "#C2C9D1") // User input
+        .attr("cx",100)
+        .attr("cy",160)
+        .attr("r", 6)
+        .style("fill", "#C2C9D1")
     d3.select("#pie-chart")
         .append("text")
-        .attr("x", 110) // User input
-        .attr("y", 160) // User input
-        .text("Neutral") // User input
-        .style("font-size", "15px") // User input
+        .attr("x", 110)
+        .attr("y", 160)
+        .text("Neutral")
+        .style("font-size", "15px")
         .attr("alignment-baseline","middle")
 
     d3.select("#pie-chart")
         .append("circle")
-        .attr("cx",100) // User input
-        .attr("cy",190) // User input
-        .attr("r", 6) // User input
-        .style("fill", "#FF8080") // User input
+        .attr("cx",100)
+        .attr("cy",190)
+        .attr("r", 6)
+        .style("fill", "#FF8080")
     d3.select("#pie-chart")
         .append("text")
-        .attr("x", 110) // User input
-        .attr("y", 190) // User input
-        .text("Negative") // User input
-        .style("font-size", "15px") // User input
+        .attr("x", 110)
+        .attr("y", 190)
+        .text("Negative")
+        .style("font-size", "15px")
         .attr("alignment-baseline","middle")
 
     // Adding chart title
     svg.append("text")
-        .attr("x", 0) // User input            
-        .attr("y", -260) // User input
+        .attr("x", 0)             
+        .attr("y", -260)
         .attr("text-anchor", "middle")  
-        .style("font-size", "18") // User input
+        .style("font-size", "18") 
         .style("text-decoration", "underline")  
-        .text("Sentiment Split across Customer Reviews"); // User input
+        .text("Sentiment Split across Customer Reviews");
 
     // Generating the groups/sectors and binding data to the same
     var g = svg.selectAll(".arc")
@@ -492,11 +512,11 @@ var flag = true;
 
 // Function to load data for the word bubble chart
 function loadCSV(){
-    d3.csv('./data/word_bubble_data.csv', function(error, data) { // User input filename
+    d3.csv('./data/word_bubble_data.csv', function(error, data) {
         if (error) throw error;
         data.forEach(function(d){
-             var dd = {"business_id": d.business_id, "stars": Number(d.stars), "keys": (d.keys), "dict":(d.dict)}
-             data1.push(dd)
+             var record = {"business_id": d.business_id, "stars": Number(d.stars), "keys": (d.keys), "dict":(d.dict)}
+             data1.push(record)
         });
     });
 
@@ -531,7 +551,7 @@ function createWordBubble(business_id){
             .attr("text-anchor", "middle")  
             .style("font-size", "20") 
             .style("text-decoration", "underline")  
-            .text("Frequently used words in customer reviews"); // User input
+            .text("Frequently used words in customer reviews");
 
     // Defining a pack to lay out the hierarchy of nodes
     var pack = d3.pack()
@@ -573,7 +593,7 @@ function createWordBubble(business_id){
             // Drawing a circle for each node
             node.append("circle")
                .attr("id", function(d) { return d.data; })
-               .attr("r", function(d) { return d.r; }) 
+               .attr("r", function(d) { return d.r; })
                .style("fill", function(d) { return color(d.data); });
 
             node.append("clipPath")
